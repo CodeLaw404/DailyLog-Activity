@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Log — Progress Harian</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0e0e11;
+    --surface: #16161c;
+    --surface2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #f0a500;
+    --accent-dim: #f0a50022;
+    --accent2: #e06c3a;
+    --text: #e8e8f0;
+    --text-dim: #7a7a96;
+    --text-muted: #3a3a52;
+    --green: #4caf87;
+    --red: #e05555;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BACKGROUND TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, #f0a50008 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, #e06c3a06 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 5rem;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .brand-eyebrow {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .brand-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .brand-title span {
+    color: var(--accent);
+  }
+
+  /* LIVE CLOCK */
+  .live-clock {
+    text-align: right;
+  }
+
+  .clock-time {
+    font-family: 'Syne Mono', monospace;
+    font-size: 1.6rem;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .clock-date {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* DATE NAV */
+  .date-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.75rem;
+  }
+
+  .date-nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+    font-family: 'Syne Mono', monospace;
+  }
+
+  .date-nav button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .date-nav input[type="date"] {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .date-nav input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(10deg);
+    cursor: pointer;
+  }
+
+  .today-btn {
+    font-size: 0.7rem !important;
+    background: var(--accent-dim) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    letter-spacing: 0.05em;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--accent); }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: 'Syne Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ADD ENTRY FORM */
+  .add-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .add-form:focus-within {
+    border-color: var(--accent);
+  }
+
+  .form-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .time-inputs span {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .time-inputs input[type="time"] {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.95rem;
+    outline: none;
+    width: 80px;
+  }
+
+  .time-inputs input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(10deg);
+  }
+
+  .separator {
+    font-family: 'Syne Mono', monospace;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .activity-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s;
+    line-height: 1.4;
+  }
+
+  .activity-input:focus {
+    border-color: var(--accent);
+  }
+
+  .activity-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .category-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    min-width: 130px;
+  }
+
+  .category-select:focus { border-color: var(--accent); }
+  .category-select option { background: var(--surface2); }
+
+  .add-btn {
+    background: var(--accent);
+    color: #0e0e11;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.25rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .add-btn:hover {
+    background: #ffc030;
+    transform: translateY(-1px);
+  }
+
+  .add-btn:active { transform: translateY(0); }
+
+  /* TIMELINE */
+  .timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .timeline-label {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .entry-count {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 2rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    display: none;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  .empty-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* ENTRY CARD */
+  .entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .entry-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: all 0.2s;
+    animation: slideIn 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .entry-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    background: var(--cat-color, var(--accent));
+  }
+
+  .entry-card:hover {
+    border-color: var(--border);
+    background: var(--surface2);
+  }
+
+  .entry-time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .entry-time-start {
+    font-family: 'Syne Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .entry-time-end {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .entry-duration {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .entry-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .entry-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .entry-category {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--cat-color, var(--accent));
+    margin-bottom: 4px;
+  }
+
+  .entry-activity {
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .entry-actions {
+    display: flex;
+    gap: 0.4rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+  }
+
+  .entry-card:hover .entry-actions { opacity: 1; }
+
+  .icon-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: all 0.15s;
+  }
+
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .icon-btn.del:hover { border-color: var(--red); color: var(--red); }
+
+  /* CATEGORY COLORS */
+  .cat-kerja    { --cat-color: #f0a500; }
+  .cat-belajar  { --cat-color: #4c9af0; }
+  .cat-pribadi  { --cat-color: #4caf87; }
+  .cat-rapat    { --cat-color: #b06cf0; }
+  .cat-istirahat { --cat-color: #e06c3a; }
+  .cat-lain     { --cat-color: #7a7a96; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #0e0e11cc;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-field {
+    margin-bottom: 0.85rem;
+  }
+
+  .modal-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'Syne Mono', monospace;
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .modal input, .modal textarea, .modal select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    outline: none;
+  }
+
+  .modal input[type="time"] {
+    font-family: 'Syne Mono', monospace;
+    color: var(--accent);
+  }
+
+  .modal textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .modal select option { background: var(--surface2); }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    padding: 0.6rem 1rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
+
+  .btn-save {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #0e0e11;
+    padding: 0.6rem 1.25rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-save:hover { background: #ffc030; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* FIREBASE CONFIG PROMPT */
+  .config-banner {
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+
+  .config-banner.show { display: block; }
+
+  .config-banner-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .config-banner p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .config-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    color: var(--accent);
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.8rem;
+    outline: none;
+    margin-bottom: 0.6rem;
+  }
+
+  .config-save-btn {
+    background: var(--accent);
+    color: #0e0e11;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* STATUS DOT */
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .status-dot.connected { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.error { background: var(--red); }
+
+  .connection-status {
+    font-family: 'Syne Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    .stat-value { font-size: 1.1rem; }
+    .form-row { gap: 0.5rem; }
+    .time-inputs { padding: 0.45rem 0.6rem; }
+    .entry-time-block { min-width: 75px; }
+    .entry-time-start { font-size: 0.85rem; }
+    .brand-title { font-size: 1.4rem; }
+    .clock-time { font-size: 1.3rem; }
+    .entry-actions { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-eyebrow">◆ Jurnal Aktivitas</div>
+      <div class="brand-title">Daily<span>Log</span></div>
+      <div class="connection-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Menghubungkan...</span>
+      </div>
+    </div>
+    <div class="live-clock">
+      <div class="clock-time" id="clockTime">00:00:00</div>
+      <div class="clock-date" id="clockDate">—</div>
+    </div>
+  </header>
+
+  <!-- DATE NAV -->
+  <div class="date-nav">
+    <button onclick="changeDate(-1)">◀</button>
+    <input type="date" id="dateInput" onchange="loadEntries()">
+    <button class="today-btn" onclick="goToday()">HARI INI</button>
+    <button onclick="changeDate(1)">▶</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Aktivitas</div>
+      <div class="stat-value" id="statCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Mulai</div>
+      <div class="stat-value" id="statFirst" style="font-size:1rem; padding-top:4px">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Selesai</div>
+      <div class="stat-value" id="statLast" style="font-size:1rem; padding-top:4px">—</div>
+    </div>
+  </div>
+
+  <!-- ADD ENTRY FORM -->
+  <div class="add-form">
+    <div class="form-title">+ Tambah Aktivitas</div>
+    <div class="form-row">
+      <div class="time-inputs">
+        <span>Mulai</span>
+        <input type="time" id="timeStart">
+        <span class="separator">–</span>
+        <span>Selesai</span>
+        <input type="time" id="timeEnd">
+      </div>
+      <select class="category-select" id="category">
+        <option value="kerja">💼 Kerja</option>
+        <option value="belajar">📖 Belajar</option>
+        <option value="rapat">🤝 Rapat / Klien</option>
+        <option value="pribadi">🌿 Pribadi</option>
+        <option value="istirahat">☕ Istirahat</option>
+        <option value="lain">📌 Lain-lain</option>
+      </select>
+    </div>
+    <div class="form-row" style="margin-top: 0.6rem;">
+      <textarea class="activity-input" id="activityInput" placeholder="Apa yang kamu kerjakan? (Tekan Enter untuk tambah)" rows="2"></textarea>
+      <button class="add-btn" onclick="addEntry()">
+        <span>+</span> Simpan
+      </button>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline-header">
+    <div class="timeline-label">▸ Timeline</div>
+    <div class="entry-count" id="entryCount">—</div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">📋</div>
+    <div class="empty-text">Belum ada aktivitas hari ini.<br>Mulai catat apa yang kamu lakukan!</div>
+  </div>
+
+  <div class="entries-list" id="entriesList"></div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">✏ Edit Aktivitas</div>
+    <div class="modal-field">
+      <label class="modal-label">Waktu Mulai</label>
+      <input type="time" id="editTimeStart">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Waktu Selesai</label>
+      <input type="time" id="editTimeEnd">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Kategori</label>
+      <select id="editCategory">
+        <option value="kerja">💼 Kerja</option>
+        <option value="belajar">📖 Belajar</option>
+        <option value="rapat">🤝 Rapat / Klien</option>
+        <option value="pribadi">🌿 Pribadi</option>
+        <option value="istirahat">☕ Istirahat</option>
+        <option value="lain">📌 Lain-lain</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Aktivitas</label>
+      <textarea id="editActivity" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn-save" onclick="saveEdit()">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE COMPAT SDK (tidak perlu module import) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script>
+
+  // =============================================
+  // FIREBASE CONFIG — GANTI DENGAN MILIK ANDA
+  // =============================================
+  const FIREBASE_CONFIG_KEY = 'dailylog_firebase_config';
+
+  let db = null;
+  let app = null;
+  let currentListener = null;
+  let currentRef = null;
+  let editingKey = null;
+
+  // =============================================
+  // CLOCK
+  // =============================================
+  function updateClock() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('clockTime').textContent =
+      pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+    document.getElementById('clockDate').textContent =
+      days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // =============================================
+  // DATE UTILS
+  // =============================================
+  function todayStr() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function nowTimeStr() {
+    const now = new Date();
+    return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  }
+
+  function calcDuration(start, end) {
+    if (!start || !end) return '';
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    const diff = (eh * 60 + em) - (sh * 60 + sm);
+    if (diff <= 0) return '';
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    if (h === 0) return m + 'mnt';
+    if (m === 0) return h + 'j';
+    return h + 'j ' + m + 'mnt';
+  }
+
+  const catLabels = {
+    kerja: '💼 Kerja',
+    belajar: '📖 Belajar',
+    rapat: '🤝 Rapat / Klien',
+    pribadi: '🌿 Pribadi',
+    istirahat: '☕ Istirahat',
+    lain: '📌 Lain-lain'
+  };
+
+  // =============================================
+  // INIT DATE
+  // =============================================
+  const dateInput = document.getElementById('dateInput');
+  dateInput.value = todayStr();
+  document.getElementById('timeStart').value = nowTimeStr();
+
+  // =============================================
+  // FIREBASE INIT
+  // =============================================
+  function setStatus(state) {
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    if (state === 'connected') {
+      dot.className = 'status-dot connected';
+      txt.textContent = 'Terhubung ke Firebase';
+    } else if (state === 'error') {
+      dot.className = 'status-dot error';
+      txt.textContent = 'Koneksi gagal';
+    } else {
+      dot.className = 'status-dot';
+      txt.textContent = 'Belum terhubung';
+    }
+  }
+
+  function tryInitFirebase(config) {
+    try {
+      // Hapus app lama jika ada
+      if (firebase.apps.length > 0) {
+        firebase.apps.forEach(function(a) { a.delete(); });
+      }
+      app = firebase.initializeApp(config);
+      db = firebase.database();
+      setStatus('connected');
+
+      loadEntries();
+    } catch (e) {
+      console.error(e);
+      setStatus('error');
+      showToast('Gagal menghubungkan ke Firebase: ' + e.message, 'error');
+    }
+  }
+
+  // =============================================
+  // LOAD ENTRIES (REALTIME)
+  // =============================================
+  window.loadEntries = function() {
+    if (!db) return;
+    var dateKey = dateInput.value.replace(/-/g, '');
+
+    if (currentRef && currentListener) {
+      currentRef.off('value', currentListener);
+    }
+
+    currentRef = db.ref('dailylog/' + dateKey);
+    currentListener = currentRef.on('value', function(snapshot) {
+      var data = snapshot.val() || {};
+      renderEntries(data);
+    });
+  };
+
+  // =============================================
+  // RENDER ENTRIES
+  // =============================================
+  function renderEntries(data) {
+    const list = document.getElementById('entriesList');
+    const empty = document.getElementById('emptyState');
+    const entries = Object.entries(data).sort((a, b) => {
+      const ta = a[1].timeStart || '00:00';
+      const tb = b[1].timeStart || '00:00';
+      return ta.localeCompare(tb);
+    });
+
+    list.innerHTML = '';
+
+    if (entries.length === 0) {
+      empty.style.display = 'block';
+      document.getElementById('statCount').textContent = '0';
+      document.getElementById('statFirst').textContent = '—';
+      document.getElementById('statLast').textContent = '—';
+      document.getElementById('entryCount').textContent = '0 aktivitas';
+      return;
+    }
+
+    empty.style.display = 'none';
+    document.getElementById('statCount').textContent = entries.length;
+    document.getElementById('statFirst').textContent = entries[0][1].timeStart || '—';
+    document.getElementById('statLast').textContent = entries[entries.length - 1][1].timeEnd || entries[entries.length - 1][1].timeStart || '—';
+    document.getElementById('entryCount').textContent = entries.length + ' aktivitas tercatat';
+
+    entries.forEach(([key, entry]) => {
+      const card = document.createElement('div');
+      card.className = 'entry-card cat-' + (entry.category || 'lain');
+      card.innerHTML =
+        '<div class="entry-time-block">' +
+          '<div class="entry-time-start">' + (entry.timeStart || '--:--') + '</div>' +
+          (entry.timeEnd ? '<div class="entry-time-end">– ' + entry.timeEnd + '</div>' : '') +
+          (calcDuration(entry.timeStart, entry.timeEnd) ? '<div class="entry-duration">' + calcDuration(entry.timeStart, entry.timeEnd) + '</div>' : '') +
+        '</div>' +
+        '<div class="entry-divider"></div>' +
+        '<div class="entry-body">' +
+          '<div class="entry-category">' + (catLabels[entry.category] || '📌 Lain-lain') + '</div>' +
+          '<div class="entry-activity">' + escapeHtml(entry.activity) + '</div>' +
+        '</div>' +
+        '<div class="entry-actions">' +
+          '<button class="icon-btn" title="Edit" data-key="' + key + '" data-action="edit">✏</button>' +
+          '<button class="icon-btn del" title="Hapus" data-key="' + key + '" data-action="delete">✕</button>' +
+        '</div>';
+      list.appendChild(card);
+    });
+
+    // Event delegation
+    list.addEventListener('click', function handler(e) {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const key = btn.dataset.key;
+      const action = btn.dataset.action;
+      if (action === 'delete') deleteEntry(key);
+      if (action === 'edit') openEdit(key, data[key]);
+    }, { once: false });
+
+    // Remove duplicate listeners - rebuild
+    const newList = list.cloneNode(true);
+    list.parentNode.replaceChild(newList, list);
+    newList.addEventListener('click', function(e) {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const key = btn.dataset.key;
+      const action = btn.dataset.action;
+      if (action === 'delete') deleteEntry(key);
+      if (action === 'edit') openEdit(key, data[key]);
+    });
+  }
+
+  function escapeHtml(text) {
+    return String(text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+
+  // =============================================
+  // ADD ENTRY
+  // =============================================
+  window.addEntry = function() {
+    if (!db) { showToast('Firebase belum terhubung', 'error'); return; }
+    var activity = document.getElementById('activityInput').value.trim();
+    if (!activity) { showToast('Tulis dulu aktivitasnya!', 'error'); return; }
+
+    var timeStart = document.getElementById('timeStart').value;
+    var timeEnd = document.getElementById('timeEnd').value;
+    var category = document.getElementById('category').value;
+    var dateKey = dateInput.value.replace(/-/g, '');
+
+    db.ref('dailylog/' + dateKey).push({
+      activity: activity,
+      timeStart: timeStart,
+      timeEnd: timeEnd,
+      category: category,
+      createdAt: Date.now()
+    }).then(function() {
+      document.getElementById('activityInput').value = '';
+      document.getElementById('timeStart').value = nowTimeStr();
+      document.getElementById('timeEnd').value = '';
+      showToast('Aktivitas disimpan!', 'success');
+    }).catch(function(e) {
+      showToast('Gagal menyimpan: ' + e.message, 'error');
+    });
+  };
+
+  // =============================================
+  // DELETE
+  // =============================================
+  window.deleteEntry = function(key) {
+    if (!confirm('Hapus aktivitas ini?')) return;
+    var dateKey = dateInput.value.replace(/-/g, '');
+    db.ref('dailylog/' + dateKey + '/' + key).remove().then(function() {
+      showToast('Dihapus.', 'success');
+    });
+  };
+
+  // =============================================
+  // EDIT MODAL
+  // =============================================
+  window.openEdit = function(key, entry) {
+    editingKey = key;
+    document.getElementById('editTimeStart').value = entry.timeStart || '';
+    document.getElementById('editTimeEnd').value = entry.timeEnd || '';
+    document.getElementById('editCategory').value = entry.category || 'lain';
+    document.getElementById('editActivity').value = entry.activity || '';
+    document.getElementById('editModal').classList.add('open');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('editModal').classList.remove('open');
+    editingKey = null;
+  };
+
+  window.saveEdit = function() {
+    if (!editingKey) return;
+    var dateKey = dateInput.value.replace(/-/g, '');
+    db.ref('dailylog/' + dateKey + '/' + editingKey).set({
+      activity: document.getElementById('editActivity').value.trim(),
+      timeStart: document.getElementById('editTimeStart').value,
+      timeEnd: document.getElementById('editTimeEnd').value,
+      category: document.getElementById('editCategory').value,
+      updatedAt: Date.now()
+    }).then(function() {
+      closeModal();
+      showToast('Perubahan disimpan!', 'success');
+    }).catch(function(e) {
+      showToast('Gagal: ' + e.message, 'error');
+    });
+  };
+
+  // =============================================
+  // DATE NAV
+  // =============================================
+  window.changeDate = function(days) {
+    const current = new Date(dateInput.value);
+    current.setDate(current.getDate() + days);
+    const y = current.getFullYear();
+    const m = String(current.getMonth() + 1).padStart(2, '0');
+    const d = String(current.getDate()).padStart(2, '0');
+    dateInput.value = y + '-' + m + '-' + d;
+    loadEntries();
+  };
+
+  window.goToday = function() {
+    dateInput.value = todayStr();
+    loadEntries();
+  };
+
+  // =============================================
+  // TOAST
+  // =============================================
+  window.showToast = function(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (type || '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  };
+
+  // Enter key to add
+  document.getElementById('activityInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      window.addEntry();
+    }
+  });
+
+  // Close modal on backdrop click
+  document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // =============================================
+  // INIT — dipanggil setelah semua fungsi terdefinisi
+  // =============================================
+  const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
+  if (savedConfig) {
+    try {
+      const cfg = JSON.parse(savedConfig);
+      tryInitFirebase(cfg);
+    } catch(e) {
+      setStatus('error');
+    }
+  } else {
+    setStatus('error');
+    showToast('Config Firebase tidak ditemukan.', 'error');
+  }
+
+</script>
+</body>
+</html>
